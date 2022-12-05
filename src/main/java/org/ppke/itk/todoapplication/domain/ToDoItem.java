@@ -24,10 +24,10 @@ public class ToDoItem {
     private String title;
     private String details;
     private Date creationDate;
-    @OneToOne(fetch = FetchType.EAGER)
+    @ManyToOne(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
     @JoinColumn(name = "priority_id")
     private ToDoPriority priority;
-    @OneToOne(fetch = FetchType.EAGER)
+    @ManyToOne(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
     @JoinColumn(name = "status_id")
     private ToDoStatus status;
 }
