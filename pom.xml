@@ -12,7 +12,7 @@
 	<artifactId>todo-application</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
 	<name>todo-application</name>
-	<description>Todo Application</description>
+	<description>TodoApplication</description>
 	<properties>
 		<java.version>17</java.version>
 	</properties>
@@ -62,7 +62,6 @@
 			<plugin>
 				<groupId>org.springframework.boot</groupId>
 				<artifactId>spring-boot-maven-plugin</artifactId>
-				<version>2.7.6</version>
 				<configuration>
 					<excludes>
 						<exclude>
