@@ -47,6 +47,7 @@ public class TodoDto {
                 .description(todo.getDescription())
                 .startDate(todo.getStartDate())
                 .done(todo.isDone())
+                .category(todo.getCategory())
                 .build();
     }
 }
