@@ -1,6 +1,7 @@
 package org.ppke.itk.todoapplication.controllers;
 
 import java.io.IOException;
+import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -9,7 +10,6 @@ import org.springframework.core.io.ByteArrayResource;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.util.FileCopyUtils;
 import org.springframework.http.HttpHeaders;
-import org.ppke.itk.todoapplication.controllers.dto.CategoryDto;
 import org.ppke.itk.todoapplication.controllers.dto.TodoDto;
 import org.ppke.itk.todoapplication.domain.Todo;
 import org.ppke.itk.todoapplication.repositories.TodoRepository;
@@ -18,6 +18,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -52,7 +53,7 @@ public class TodoController {
 
         byte[] binaryData = FileCopyUtils.copyToByteArray((new ClassPathResource("static/todos.txt")).getInputStream());
         HttpHeaders header = new HttpHeaders();
-        header.add(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=teams.txt");
+        header.add(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=todos.txt");
 
         ByteArrayResource resource = new ByteArrayResource(binaryData);
 
@@ -64,28 +65,29 @@ public class TodoController {
     }
 
     @GetMapping("/{id}")
-    public Todo getTodoById(Long id) {
+    public Todo getTodoById(@PathVariable Long id) {
         return todoRepository.findById(id).orElseThrow();
     }
 
     @DeleteMapping("/{id}")
-    public void deleteTodoById(Long id) {
+    public void deleteTodoById(@PathVariable Long id) {
         todoRepository.deleteById(id);
     }
 
     @PostMapping
     public TodoDto createTodo(@RequestBody TodoDto todoDto) {
+        todoDto.setStartDate(new Date());
         return TodoDto.fromEntity(todoRepository.save(TodoDto.toEntity(todoDto)));
     }
 
     @PutMapping("/{id}")
-    public TodoDto updateTodoById(Long id, @RequestBody TodoDto todoDto) {
+    public TodoDto updateTodoById(@PathVariable Long id, @RequestBody TodoDto todoDto) {
         final Todo todo = todoRepository.findById(id).orElseThrow();
         todo.setTitle(todoDto.getTitle());
         todo.setDescription(todoDto.getDescription());
         todo.setDone(todoDto.isDone());
         todo.setStartDate(todoDto.getStartDate());
-        todo.setCategory(CategoryDto.toEntity(todoDto.getCategory()));
+        // todo.setCategory(CategoryDto.toEntity(todoDto.getCategory()));
 
         return TodoDto.fromEntity(todoRepository.save(todo));
     }

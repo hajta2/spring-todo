@@ -10,6 +10,8 @@ import java.util.stream.Collectors;
 
 import org.ppke.itk.todoapplication.domain.Category;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
@@ -22,14 +24,15 @@ public class CategoryDto {
 
     private String description;
 
-    private UserDto user;
+    // private AccountDto account;
 
+    @JsonIgnore
     private List<TodoDto> todoList;
 
     public static Category toEntity(CategoryDto categoryDto) {
         Category category = new Category();
 
-        category.setUser(UserDto.toEntity(categoryDto.getUser()));
+        // category.setAccount(AccountDto.toEntity(categoryDto.getAccount()));
         category.setId(categoryDto.getId());
         category.setName(categoryDto.getName());
         category.setDescription(categoryDto.getDescription());

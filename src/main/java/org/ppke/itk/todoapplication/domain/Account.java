@@ -12,10 +12,10 @@ import java.util.List;
 @AllArgsConstructor
 @NoArgsConstructor
 @Data
-public class User implements Serializable {
+public class Account implements Serializable {
 
     @Id
-    @GeneratedValue
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     private String firstName;
@@ -28,6 +28,8 @@ public class User implements Serializable {
 
     private String password;
 
-    @OneToMany(mappedBy = "user")
+    private String role;
+
+    @OneToMany(mappedBy = "account")
     private List<Category> category;
 }

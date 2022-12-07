@@ -31,9 +31,9 @@ public class Category implements Serializable {
     private String description;
 
     @ManyToOne
-    @JoinColumn(name = "userId")
+    @JoinColumn(name = "account_id")
     @JsonIgnore
-    private User user;
+    private Account account;
 
     @OneToMany(mappedBy = "category", fetch = FetchType.EAGER)
     private List<Todo> todoList;
