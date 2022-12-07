@@ -12,6 +12,7 @@ import org.springframework.util.FileCopyUtils;
 import org.springframework.http.HttpHeaders;
 import org.ppke.itk.todoapplication.controllers.dto.TodoDto;
 import org.ppke.itk.todoapplication.domain.Todo;
+import org.ppke.itk.todoapplication.repositories.CategoryRepository;
 import org.ppke.itk.todoapplication.repositories.TodoRepository;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -34,6 +35,7 @@ import lombok.RequiredArgsConstructor;
 @RequestMapping("/todos")
 public class TodoController {
     private final TodoRepository todoRepository;
+    private final CategoryRepository categoryRepository;
 
     @GetMapping
     public List<TodoDto> getTodos(@RequestParam(required = false, defaultValue = "100") Integer limit,
@@ -74,8 +76,9 @@ public class TodoController {
         todoRepository.deleteById(id);
     }
 
-    @PostMapping
-    public TodoDto createTodo(@RequestBody TodoDto todoDto) {
+    @PostMapping(value = "/{categoryId}")
+    public TodoDto createTodo(@PathVariable Long categoryId, @RequestBody TodoDto todoDto) {
+        todoDto.setCategory(categoryRepository.findById(categoryId).orElseThrow());
         todoDto.setStartDate(new Date());
         return TodoDto.fromEntity(todoRepository.save(TodoDto.toEntity(todoDto)));
     }
@@ -87,7 +90,7 @@ public class TodoController {
         todo.setDescription(todoDto.getDescription());
         todo.setDone(todoDto.isDone());
         todo.setStartDate(todoDto.getStartDate());
-        // todo.setCategory(CategoryDto.toEntity(todoDto.getCategory()));
+        todo.setCategory(todoDto.getCategory());
 
         return TodoDto.fromEntity(todoRepository.save(todo));
     }
