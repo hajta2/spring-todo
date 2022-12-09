@@ -26,7 +26,7 @@ public class TodoDto {
 
     private boolean done;
 
-    private Category category;
+    // private Category category;
 
     public static Todo toEntity(TodoDto todoDto) {
         final Todo todo = new Todo();
@@ -35,7 +35,7 @@ public class TodoDto {
         todo.setDescription(todoDto.getDescription());
         todo.setDone(todoDto.isDone());
         todo.setStartDate(todoDto.getStartDate());
-        todo.setCategory(todoDto.getCategory());
+        // todo.setCategory(todoDto.getCategory());
 
         return todo;
     }
@@ -47,7 +47,7 @@ public class TodoDto {
                 .description(todo.getDescription())
                 .startDate(todo.getStartDate())
                 .done(todo.isDone())
-                .category(todo.getCategory())
+                // .category(todo.getCategory())
                 .build();
     }
 }

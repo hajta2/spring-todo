@@ -3,7 +3,9 @@ package org.ppke.itk.todoapplication.controllers;
 import java.io.IOException;
 import java.util.Date;
 import java.util.List;
+import java.util.function.Predicate;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.ByteArrayResource;
@@ -35,36 +37,45 @@ import lombok.RequiredArgsConstructor;
 @RequestMapping("/todos")
 public class TodoController {
     private final TodoRepository todoRepository;
-    private final CategoryRepository categoryRepository;
+    // private final CategoryRepository categoryRepository;
 
     @GetMapping
     public List<TodoDto> getTodos(@RequestParam(required = false, defaultValue = "100") Integer limit,
-            @RequestParam(required = false, defaultValue = "desc") String sort) {
+            @RequestParam(required = false, defaultValue = "desc") String sort,
+            @RequestParam(required = false, defaultValue = "false") Boolean completed) {
         if (!sort.equalsIgnoreCase("desc") && !sort.equalsIgnoreCase("asc")) {
             throw new IllegalArgumentException("Invalid sorting param!!!");
         }
+
         var sortParam = sort.equalsIgnoreCase("asc") ? Sort.by(Sort.Direction.ASC, "startDate")
                 : Sort.by(Sort.Direction.DESC, "startDate");
 
         Page<Todo> todos = todoRepository.findAll(PageRequest.of(0, limit, sortParam));
-        return todos.stream().map(TodoDto::fromEntity).collect(Collectors.toList());
+        if (completed) {
+            return todos.stream().filter(Todo::isDone).map(TodoDto::fromEntity).collect(Collectors.toList());
+        } else {
+            return todos.stream().filter(Predicate.not(Todo::isDone)).map(TodoDto::fromEntity)
+                    .collect(Collectors.toList());
+        }
     }
 
-    @GetMapping(produces = "text/plain")
-    public ResponseEntity<Resource> getTodosAsTxt() throws IOException {
+    // @GetMapping(produces = "text/plain")
+    // public ResponseEntity<Resource> getTodosAsTxt() throws IOException {
 
-        byte[] binaryData = FileCopyUtils.copyToByteArray((new ClassPathResource("static/todos.txt")).getInputStream());
-        HttpHeaders header = new HttpHeaders();
-        header.add(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=todos.txt");
+    // byte[] binaryData = FileCopyUtils.copyToByteArray((new
+    // ClassPathResource("static/todos.txt")).getInputStream());
+    // HttpHeaders header = new HttpHeaders();
+    // header.add(HttpHeaders.CONTENT_DISPOSITION, "attachment;
+    // filename=todos.txt");
 
-        ByteArrayResource resource = new ByteArrayResource(binaryData);
+    // ByteArrayResource resource = new ByteArrayResource(binaryData);
 
-        return ResponseEntity.ok()
-                .headers(header)
-                .contentLength(resource.contentLength())
-                .contentType(org.springframework.http.MediaType.parseMediaType("text/plain"))
-                .body(resource);
-    }
+    // return ResponseEntity.ok()
+    // .headers(header)
+    // .contentLength(resource.contentLength())
+    // .contentType(org.springframework.http.MediaType.parseMediaType("text/plain"))
+    // .body(resource);
+    // }
 
     @GetMapping("/{id}")
     public Todo getTodoById(@PathVariable Long id) {
@@ -76,9 +87,9 @@ public class TodoController {
         todoRepository.deleteById(id);
     }
 
-    @PostMapping(value = "/{categoryId}")
-    public TodoDto createTodo(@PathVariable Long categoryId, @RequestBody TodoDto todoDto) {
-        todoDto.setCategory(categoryRepository.findById(categoryId).orElseThrow());
+    @PostMapping
+    public TodoDto createTodo(@RequestBody TodoDto todoDto) {
+        // todoDto.setCategory(categoryRepository.findById(categoryId).orElseThrow());
         todoDto.setStartDate(new Date());
         return TodoDto.fromEntity(todoRepository.save(TodoDto.toEntity(todoDto)));
     }
@@ -90,7 +101,7 @@ public class TodoController {
         todo.setDescription(todoDto.getDescription());
         todo.setDone(todoDto.isDone());
         todo.setStartDate(todoDto.getStartDate());
-        todo.setCategory(todoDto.getCategory());
+        // todo.setCategory(todoDto.getCategory());
 
         return TodoDto.fromEntity(todoRepository.save(todo));
     }
